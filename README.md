@@ -1,6 +1,6 @@
 # Financial Analysis System
 
-![System Architecture](docs/architecture.png)
+![System Architecture](workflow_mermaid_diagram.png)
 
 AI-powered system for real-time financial market analysis with voice and text input.
 
@@ -58,15 +58,3 @@ docker push your-account-id.dkr.ecr.region.amazonaws.com/financial-analysis:late
 | `GROQ_API_KEY`            | Yes      | Groq Cloud API key                   |
 | `ALPHAVANTAGE_API_KEY`    | Yes      | AlphaVantage stock API key           |
 
-## Development
-
-```bash
-# Run tests
-pytest tests/
-
-# Format code
-black src/ tests/
-
-# Check types
-mypy src/
-```
