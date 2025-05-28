@@ -1,4 +1,4 @@
-from src.orchestration.workflow import build_workflow
+from src.orchestration.workflow import create_workflow
 from src.core.llm_config import get_llm
 from src.services.speech_service import SpeechService
 from src.core.models import AppState
@@ -36,7 +36,7 @@ def main():
     
     # Initialize services
     services = {
-        'workflow': build_workflow(),
+        'workflow': create_workflow(),
         'speech_service': SpeechService(),
         'llm': get_llm()
     }

@@ -8,6 +8,7 @@ from src.agents.data_agents.news_api import news_api_agent
 from src.agents.data_agents.price_api import price_api_agent
 from src.agents.retriever_agents.news_retriever import news_retriever_agent
 from src.agents.retriever_agents.price_retriever import price_retriever_agent
+from src.agents.keyword_agent import extract_keywords_agent
 
 def create_workflow() -> StateGraph:
     """Builds the complete LangGraph workflow"""
@@ -15,7 +16,7 @@ def create_workflow() -> StateGraph:
     
     # Add all nodes
     workflow.add_node("speech_input", voice_agent)
-    workflow.add_node("keyword_extraction", keyword_agent.process)
+    workflow.add_node("keyword_extraction", extract_keywords_agent)
     workflow.add_node("price_data", price_api_agent)
     workflow.add_node("news_data", news_api_agent)
     workflow.add_node("price_retrieval", price_retriever_agent)
