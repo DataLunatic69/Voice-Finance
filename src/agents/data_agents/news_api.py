@@ -1,19 +1,23 @@
 from langchain_core.documents import Document
 from langchain_community.tools.yahoo_finance_news import YahooFinanceNewsTool
-from src.core.models import ExtractedKeywords
+from core.models import ExtractedKeywords
 from typing import List
 from datetime import datetime
 import os
-from src.core.vector_stores import news_vector_store
-from src.core.models import AppState
+import logging
+from core.vector_stores import news_vector_store
+from core.models import AppState
 from typing import List, Dict, Any
 
-
+logger = logging.getLogger(__name__)
 
 def news_api_agent(state: AppState) -> Dict[str, Any]:
     """Fetch news data and convert to documents for vector storage"""
     keywords = state["extracted_keywords"]
     documents = []
+    
+    logger.info(f"📰 NEWS DATA FETCHING STARTED")
+    logger.debug(f"   Companies to fetch: {keywords.companies}")
     
     try:
         # Initialize Yahoo Finance News tool
@@ -64,7 +68,8 @@ def news_api_agent(state: AppState) -> Dict[str, Any]:
                 continue
                 
     except Exception as e:
-        print(f"Yahoo Finance news error: {e}")
+        logger.warning(f"   Yahoo Finance API error: {str(e)}")
+        logger.info(f"   Using fallback news data")
         # Create fallback news documents
         for company in keywords.companies[:3]:
             doc_content = f"""
@@ -90,5 +95,9 @@ def news_api_agent(state: AppState) -> Dict[str, Any]:
     # Store documents in vector store
     if documents:
         news_vector_store.add_documents(documents)
+        logger.info(f"✅ NEWS DATA FETCHING COMPLETED")
+        logger.info(f"   Documents created: {len(documents)}")
+    else:
+        logger.warning(f"   No news documents created")
     
     return {"news_documents": documents}

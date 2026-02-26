@@ -1,5 +1,5 @@
 from typing import TypedDict, List, Optional
-from src.core.models import (
+from core.models import (
     ExtractedKeywords,
     PriceAnalysisReport,
     NewsAnalysisReport,

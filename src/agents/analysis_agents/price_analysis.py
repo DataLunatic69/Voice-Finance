@@ -1,12 +1,18 @@
 from langchain_core.messages import HumanMessage
-from src.core.llm_config import get_llm
-from src.core.models import PriceAnalysisReport, AppState
+from core.llm_config import get_llm
+from core.models import PriceAnalysisReport, AppState
 from typing import Dict, Any
+import logging
+
+logger = logging.getLogger(__name__)
 
 def price_analysis_agent(state: AppState) -> Dict[str, Any]:
     """Analyze retrieved price documents"""
     relevant_docs = state["relevant_price_docs"]
     user_query = state["user_query"]
+    
+    logger.info(f"📊 PRICE ANALYSIS STARTED")
+    logger.info(f"   Documents to analyze: {len(relevant_docs)}")
     
     if not get_llm:
         # Fallback for testing
@@ -25,29 +31,34 @@ def price_analysis_agent(state: AppState) -> Dict[str, Any]:
     doc_content = "\n\n".join([doc.page_content for doc in relevant_docs])
     
     prompt = f"""
-    As a technical analyst, analyze the following price data and provide a comprehensive analysis:
+    As a professional technical analyst, provide a DETAILED and COMPREHENSIVE price analysis:
     
     Price Data:
-    {doc_content}
+    {doc_content if doc_content.strip() else "No specific price data available - provide general technical analysis for the requested security"}
     
     User Query: {user_query}
     
-    Provide analysis covering:
-    - Trend direction (UP/DOWN/NEUTRAL)
-    - Volatility assessment (HIGH/MEDIUM/LOW)
-    - Key support and resistance levels
-    - Risk assessment
-    - Technical summary
+    REQUIRED: Provide detailed analysis covering:
+    - Trend direction (UP/DOWN/NEUTRAL) with explanation
+    - Volatility assessment (HIGH/MEDIUM/LOW) and impact
+    - Key support and resistance price levels with specific numbers
+    - Comprehensive risk assessment and mitigation strategies
+    - Detailed technical summary with patterns and signals
     
-    Focus on answering the specific user query while providing comprehensive technical analysis.
-    """
+    Be specific, professional, and insightful. Provide actionable analysis."""
     
     try:
-        analysis_llm = get_llm.with_structured_output(PriceAnalysisReport)
-        analysis = analysis_llm.invoke([HumanMessage(prompt)])
+        analysis_llm = get_llm().with_structured_output(PriceAnalysisReport)
+        logger.debug(f"   LLM initialized for analysis")
+        analysis = analysis_llm.invoke([HumanMessage(content=prompt)])
+        logger.info(f"✅ PRICE ANALYSIS COMPLETED")
+        logger.info(f"   Trend: {analysis.trend_direction}")
+        logger.info(f"   Volatility: {analysis.volatility_level}")
+        logger.info(f"   Support Levels: {analysis.support_levels}")
+        logger.info(f"   Resistance Levels: {analysis.resistance_levels}")
         return {"price_analysis_report": analysis}
     except Exception as e:
-        print(f"Price analysis error: {e}")
+        logger.error(f"❌ Price analysis error: {str(e)}")
         # Return fallback analysis
         return {
             "price_analysis_report": PriceAnalysisReport(

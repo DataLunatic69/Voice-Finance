@@ -1,7 +1,10 @@
 from langchain_core.messages import HumanMessage
-from src.core.llm_config import get_llm
-from src.core.models import FinalReport, AppState
+from core.llm_config import get_llm
+from core.models import FinalReport, AppState
 from typing import Dict, Any
+import logging
+
+logger = logging.getLogger(__name__)
 
 def language_synthesis_agent(state: AppState) -> Dict[str, Any]:
     """Synthesize final comprehensive market brief"""
@@ -9,6 +12,10 @@ def language_synthesis_agent(state: AppState) -> Dict[str, Any]:
     news_analysis = state["news_analysis_report"]
     user_query = state["user_query"]
     keywords = state["extracted_keywords"]
+    
+    logger.info(f"📝 FINAL REPORT SYNTHESIS STARTED")
+    logger.debug(f"   Price Analysis available: {price_analysis is not None}")
+    logger.debug(f"   News Analysis available: {news_analysis is not None}")
     
     if not get_llm:
         # Fallback for testing
@@ -23,7 +30,7 @@ def language_synthesis_agent(state: AppState) -> Dict[str, Any]:
         }
     
     prompt = f"""
-    As a senior financial analyst, create a comprehensive market brief based on the following analysis:
+    As a senior financial analyst, create a DETAILED and COMPREHENSIVE market brief based on the following analysis:
     
     Price Analysis:
     - Trend: {price_analysis.trend_direction}
@@ -44,22 +51,27 @@ def language_synthesis_agent(state: AppState) -> Dict[str, Any]:
     
     User Query: {user_query}
     
-    Create a comprehensive market brief that directly addresses the user's query with:
-    - Executive summary of current market conditions
-    - Risk exposure analysis
-    - Key market highlights
-    - Specific trading recommendations
-    - Forward-looking market outlook
+    REQUIRED: Create a detailed and professional market brief addressing the specific user query with:
+    1. Executive Summary - 3-4 sentences synthesizing both price and news analysis for clear, actionable insights
+    2. Risk Exposure - Detailed assessment of downside risks, volatility exposure, and hedging considerations
+    3. Key Highlights - 4-5 specific findings from price action, news events, and market sentiment (with concrete details)
+    4. Recommendations - 4-5 specific, actionable trading/investment recommendations based on the combined analysis
+    5. Market Outlook - Detailed forward-looking assessment (short-term, medium-term implications, monitoring points)
     
-    Make this sound like a professional morning market brief suitable for a portfolio manager.
+    Use specific numbers, price levels, sentiment scores from the analysis above. Be professional and detailed.
+    This is a portfolio manager's briefing - provide substantive, detailed insights, not generic commentary.
     """
     
     try:
-        synthesis_llm = get_llm.with_structured_output(FinalReport)
-        final_report = synthesis_llm.invoke([HumanMessage(prompt)])
+        synthesis_llm = get_llm().with_structured_output(FinalReport)
+        logger.debug(f"   LLM initialized for synthesis")
+        final_report = synthesis_llm.invoke([HumanMessage(content=prompt)])
+        logger.info(f"✅ FINAL REPORT SYNTHESIS COMPLETED")
+        logger.info(f"   Executive Summary: {final_report.executive_summary[:100]}...")
+        logger.info(f"   Recommendations: {final_report.recommendations}")
         return {"final_report": final_report}
     except Exception as e:
-        print(f"Language synthesis error: {e}")
+        logger.error(f"❌ Language synthesis error: {str(e)}")
         # Return fallback report
         return {
             "final_report": FinalReport(

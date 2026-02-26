@@ -1,9 +1,16 @@
 import streamlit as st
-from src.orchestration.workflow import build_workflow
-from src.services.speech_service import SpeechService
-from src.core.models import AppState
-from src.core.llm_config import get_llm
+from orchestration.workflow import create_workflow
+from core.models import AppState
+from core.llm_config import get_llm
+from dotenv import load_dotenv
 import logging
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -12,8 +19,7 @@ logger = logging.getLogger(__name__)
 def initialize_services():
     """Initialize all required services"""
     return {
-        'workflow': build_workflow(),
-        'speech_service': SpeechService(),
+        'workflow': create_workflow(),
         'llm': get_llm()
     }
 
@@ -50,31 +56,14 @@ def main():
     
     st.title("AI Financial Analyst")
     st.markdown("""
-    Get real-time market analysis through voice or text input.
+    Get real-time market analysis through text input.
     """)
     
-    # Input selection
-    input_method = st.radio(
-        "Input Method:",
-        ("Voice", "Text"),
-        horizontal=True
+    # Text input only
+    user_query = st.text_area(
+        "Enter your financial query:",
+        placeholder="e.g. Analyze AAPL stock price and recent news"
     )
-    
-    user_query = ""
-    
-    if input_method == "Voice":
-        if st.button("🎤 Start Recording (5 seconds)"):
-            with st.spinner("Recording..."):
-                audio_file = services['speech_service'].record_audio(duration=5)
-                if audio_file:
-                    with st.spinner("Transcribing..."):
-                        user_query = services['speech_service'].transcribe(audio_file)
-    
-    else:  # Text input
-        user_query = st.text_area(
-            "Enter your financial query:",
-            placeholder="e.g. Analyze AAPL stock price and recent news"
-        )
     
     if user_query:
         st.info(f"Processing query: {user_query}")

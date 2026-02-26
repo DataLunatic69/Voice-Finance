@@ -1,5 +1,5 @@
 from typing import Literal
-from src.orchestration.states import AppState
+from orchestration.states import AppState
 
 def route_to_analysis(state: AppState) -> Literal["price", "news", "both"]:
     """Enhanced routing logic with sentiment analysis"""

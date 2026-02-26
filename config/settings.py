@@ -1,12 +1,14 @@
 import os
 from pydantic_settings import BaseSettings
 from typing import Optional
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Settings(BaseSettings):
     # API Configuration
-    OPENAI_API_KEY: str
-    GROQ_API_KEY: str
-    ALPHAVANTAGE_API_KEY: str
+    GROQ_API_KEY: str = ""
+    ALPHAVANTAGE_API_KEY: str = ""
     
     # Application Settings
     LOG_LEVEL: str = "INFO"
@@ -16,10 +18,6 @@ class Settings(BaseSettings):
     # Vector Store Configuration
     CHROMA_PERSIST_DIR: str = "data/chroma_stores"
     EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"
-    
-    # Audio Settings
-    AUDIO_SAMPLE_RATE: int = 16000
-    MAX_AUDIO_DURATION: int = 15  # seconds
     
     class Config:
         env_file = ".env"

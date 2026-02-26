@@ -1,13 +1,114 @@
-# 🎤 Financial Analysis System
+# 📊 Financial Analysis System - Text Input Only
 
-![System Architecture](workflow_mermaid_diagram.png)
-
-AI-powered real-time financial market analysis with voice and text input capabilities.
+AI-powered financial market analysis system using **Groq's FREE LLM API** with text input.
 
 ## ✨ Features
 
-- 🎤 **Voice Input** - Real-time speech processing via OpenAI Whisper
-- 📈 **Multi-Source Data** - AlphaVantage & Yahoo Finance integration  
+✅ **Text Input Only** - No voice processing  
+✅ **Groq LLM Integration** - 100% FREE API, no credit card needed  
+✅ **Multi-Source Data** - Price and news data integration  
+✅ **Vector Search** - Semantic document retrieval with embeddings  
+✅ **Professional Reports** - Executive summaries with recommendations  
+✅ **Detailed Logging** - Comprehensive execution logs for debugging  
+✅ **Web UI** - Streamlit interface for easy interaction  
+✅ **CLI Support** - Command-line interface for automation  
+
+## 🚀 Quick Start
+
+### 1. Get Free Groq API Key
+Visit: https://console.groq.com/keys (no credit card needed!)
+
+### 2. Configure
+```bash
+cp .env.example .env
+# Edit .env and add: GROQ_API_KEY=your_key_here
+```
+
+### 3. Run
+```bash
+# CLI
+.venv/bin/python -m src.main --query "Analyze AAPL stock"
+
+# Web UI
+.venv/bin/streamlit run src/ui/app.py
+
+# Interactive
+.venv/bin/python -m src.main
+```
+
+## 📊 How It Works
+
+1. **Extract Keywords** - Identifies companies, sectors, financial terms
+2. **Fetch Data** - Retrieves price and news information  
+3. **Vector Search** - Finds relevant documents using embeddings
+4. **Analyze** - Uses Groq LLM to analyze trends and sentiment
+5. **Report** - Generates executive summary with recommendations
+
+## 🔑 API Configuration
+
+**Groq API:**
+- Website: https://console.groq.com/
+- Cost: **100% FREE**
+- Rate Limit: 30 requests/minute
+- Model: `mixtral-8x7b-32768`
+
+## 📁 Key Files
+
+- `src/main.py` - CLI entry point
+- `src/core/llm_config.py` - Groq LLM setup
+- `src/ui/app.py` - Streamlit web interface
+- `.env.example` - Configuration template
+- `financial_analysis.log` - Execution logs
+
+## 📚 Documentation
+
+- **QUICKSTART.md** - Quick reference guide
+- **SETUP_COMPLETE.md** - Full setup instructions
+- **FINAL_SUMMARY.txt** - Project summary
+- **CHANGES_MADE.md** - Modifications made
+
+## 💡 Example Usage
+
+```bash
+# Simple query
+.venv/bin/python -m src.main --query "Analyze Apple stock"
+
+# Interactive mode
+.venv/bin/python -m src.main
+
+# Web UI
+.venv/bin/streamlit run src/ui/app.py
+```
+
+## 🐛 Debugging
+
+View logs in real-time:
+```bash
+tail -f financial_analysis.log
+```
+
+## ✨ What's Changed
+
+✅ Removed OpenAI completely  
+✅ Using Groq free API instead  
+✅ Text-only input (no voice)  
+✅ Added comprehensive logging  
+✅ Fixed all workflow issues  
+✅ Ready for production use  
+
+## 📦 Requirements
+
+- Python 3.10+
+- Groq API key (FREE)
+- 5 minutes to setup
+
+## 🎯 Next Steps
+
+1. Get Groq API key: https://console.groq.com/keys
+2. Add to .env file
+3. Run the app!
+
+Status: ✅ **FULLY FUNCTIONAL**
 - 🧠 **AI Analysis** - Powered by Groq/Llama 70B for intelligent insights
 - 🔍 **Vector Search** - ChromaDB for semantic document retrieval
 - 📊 **Interactive Dashboard** - Real-time charts and visualizations

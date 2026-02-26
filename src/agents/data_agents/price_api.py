@@ -1,17 +1,23 @@
 from langchain_core.documents import Document
 from langchain_community.utilities.alpha_vantage import AlphaVantageAPIWrapper
-from src.core.models import ExtractedKeywords
+from core.models import ExtractedKeywords
 from typing import List, Dict, Any
 import numpy as np
 from datetime import datetime
 import os
-from src.core.vector_stores import price_vector_store
-from src.core.models import AppState
+import logging
+from core.vector_stores import price_vector_store
+from core.models import AppState
+
+logger = logging.getLogger(__name__)
 
 def price_api_agent(state: AppState) -> Dict[str, Any]:
     """Fetch price data and convert to documents for vector storage"""
     keywords = state["extracted_keywords"]
     documents = []
+    
+    logger.info(f"📈 PRICE DATA FETCHING STARTED")
+    logger.debug(f"   Companies to fetch: {keywords.companies}")
     
     try:
         # Initialize AlphaVantage wrapper
@@ -58,7 +64,8 @@ def price_api_agent(state: AppState) -> Dict[str, Any]:
                 continue
                 
     except Exception as e:
-        print(f"AlphaVantage initialization error: {e}")
+        logger.warning(f"   AlphaVantage API error: {str(e)}")
+        logger.info(f"   Using fallback price data")
         # Create fallback documents for testing
         for company in keywords.companies[:3]:
             doc_content = f"""
@@ -84,5 +91,9 @@ def price_api_agent(state: AppState) -> Dict[str, Any]:
     
     if documents:
         price_vector_store.add_documents(documents)
+        logger.info(f"✅ PRICE DATA FETCHING COMPLETED")
+        logger.info(f"   Documents created: {len(documents)}")
+    else:
+        logger.warning(f"   No price documents created")
     
     return {"price_documents": documents}
